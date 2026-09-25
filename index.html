@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="favicon.png" type="image/png" sizes="64x64">
+  <title>V-Stream 影片媒體庫</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ==================== SVG 圖示定義庫 (All icons purely defined in SVG) ==================== -->
+  <svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Logo 圖示 -->
+      <symbol id="icon-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="18" rx="4" />
+        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none" />
+        <circle cx="17" cy="5" r="1" fill="currentColor" />
+        <circle cx="19" cy="5" r="1" fill="currentColor" />
+      </symbol>
+
+      <!-- 影片庫 -->
+      <symbol id="icon-library" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 6h16" />
+        <path d="M4 10h16" />
+        <path d="M4 14h16" />
+        <path d="M4 18h16" />
+        <rect x="2" y="3" width="20" height="18" rx="2" />
+      </symbol>
+
+      <!-- 上傳 -->
+      <symbol id="icon-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="17 8 12 3 7 8" />
+        <line x1="12" y1="3" x2="12" y2="15" />
+      </symbol>
+
+      <!-- 播放 (實心三角) -->
+      <symbol id="icon-play" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="6 4 20 12 6 20 6 4" />
+      </symbol>
+
+      <!-- 暫停 (雙實心條) -->
+      <symbol id="icon-pause" viewBox="0 0 24 24" fill="currentColor">
+        <rect x="5" y="4" width="4" height="16" rx="1" />
+        <rect x="15" y="4" width="4" height="16" rx="1" />
+      </symbol>
+
+      <!-- 快退 10 秒 (符合截圖的左雙三角加垂直桿) -->
+      <symbol id="icon-rewind" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="11 12 20 6 20 18" />
+        <polygon points="2 12 11 6 11 18" />
+        <rect x="2" y="6" width="2" height="12" />
+      </symbol>
+
+      <!-- 快進 10 秒 (符合截圖的右雙三角加垂直桿) -->
+      <symbol id="icon-forward" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="4 6 13 12 4 18" />
+        <polygon points="13 6 22 12 13 18" />
+        <rect x="20" y="6" width="2" height="12" />
+      </symbol>
+
+      <!-- 字幕 CC (符合截圖的圓角矩形+虛線橫條) -->
+      <symbol id="icon-captions" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="5" width="20" height="14" rx="3" fill="currentColor" fill-opacity="0.1" />
+        <line x1="6" y1="12" x2="10" y2="12" stroke-width="2.5" />
+        <line x1="14" y1="12" x2="18" y2="12" stroke-width="2.5" />
+        <line x1="6" y1="15" x2="12" y2="15" stroke-width="2.5" />
+        <line x1="14" y1="15" x2="17" y2="15" stroke-width="2.5" />
+      </symbol>
+
+      <!-- 設定齒輪 (符合截圖) -->
+      <symbol id="icon-settings" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+      </symbol>
+
+      <!-- 全螢幕 (符合截圖的四角框線) -->
+      <symbol id="icon-fullscreen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 9V4h5" />
+        <path d="M20 9V4h-5" />
+        <path d="M4 15v5h5" />
+        <path d="M20 15v5h-5" />
+      </symbol>
+
+      <!-- 退出全螢幕 -->
+      <symbol id="icon-fullscreen-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 4v5H4" />
+        <path d="M15 4v5h5" />
+        <path d="M9 20v-5H4" />
+        <path d="M15 20v-5h5" />
+      </symbol>
+
+      <!-- 音量高 -->
+      <symbol id="icon-volume-high" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+      </symbol>
+
+      <!-- 靜音 -->
+      <symbol id="icon-volume-mute" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+      </symbol>
+
+      <!-- 返回箭頭 -->
+      <symbol id="icon-arrow-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12" />
+        <polyline points="12 19 5 12 12 5" />
+      </symbol>
+
+      <!-- 搜尋 -->
+      <symbol id="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </symbol>
+
+      <!-- 網格檢視 -->
+      <symbol id="icon-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+      </symbol>
+
+      <!-- 列表檢視 -->
+      <symbol id="icon-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="8" y1="6" x2="21" y2="6" />
+        <line x1="8" y1="12" x2="21" y2="12" />
+        <line x1="8" y1="18" x2="21" y2="18" />
+        <line x1="3" y1="6" x2="3.01" y2="6" stroke-width="3" />
+        <line x1="3" y1="12" x2="3.01" y2="12" stroke-width="3" />
+        <line x1="3" y1="18" x2="3.01" y2="18" stroke-width="3" />
+      </symbol>
+
+      <!-- 刪除垃圾桶 -->
+      <symbol id="icon-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6" />
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+        <line x1="10" y1="11" x2="10" y2="17" />
+        <line x1="14" y1="11" x2="14" y2="17" />
+      </symbol>
+
+      <!-- 編輯筆 -->
+      <symbol id="icon-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+      </symbol>
+
+      <!-- 收藏星星 -->
+      <symbol id="icon-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </symbol>
+
+      <!-- 畫中畫 (PiP) -->
+      <symbol id="icon-pip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="20" height="16" rx="2" />
+        <rect x="12" y="11" width="8" height="7" rx="1" fill="currentColor" fill-opacity="0.3" />
+      </symbol>
+
+      <!-- 時鐘 -->
+      <symbol id="icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </symbol>
+
+      <!-- 閃電速度 (象徵極速) -->
+      <symbol id="icon-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor" />
+      </symbol>
+
+      <!-- 關閉 / 取消 -->
+      <symbol id="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </symbol>
+
+      <!-- 勾選確認 -->
+      <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12" />
+      </symbol>
+
+      <!-- 圖片 (縮圖自訂) -->
+      <symbol id="icon-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </symbol>
+
+      <!-- 字幕檔案 -->
+      <symbol id="icon-subtitles-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="8" y1="13" x2="16" y2="13"/>
+        <line x1="8" y1="17" x2="12" y2="17"/>
+      </symbol>
+
+      <!-- 重新擷取畫面 -->
+      <symbol id="icon-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10" />
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- ==================== 頂部導覽列 (Top Navigation) ==================== -->
+  <header class="app-header">
+    <div class="header-left">
+      <a href="#" class="brand-logo" id="nav-brand" title="返回影片庫">
+        <div class="logo-icon-wrap">
+          <svg class="svg-icon logo-icon"><use href="#icon-logo"></use></svg>
+        </div>
+        <span class="brand-name">V-Stream <span class="brand-badge">Vault</span></span>
+      </a>
+
+      <!-- 頂部資訊標籤 (直接聚焦於影音庫) -->
+      <div class="header-status-pill">
+        <svg class="svg-icon"><use href="#icon-library"></use></svg>
+        <span>影音媒體庫</span>
+        <span class="badge-count" id="header-video-count">0</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="header-search-bar">
+        <svg class="svg-icon search-icon"><use href="#icon-search"></use></svg>
+        <input type="text" id="global-search-input" placeholder="搜尋影片庫中任何影片..." autocomplete="off">
+        <button class="clear-search-btn hidden" id="btn-clear-search" title="清除搜尋">
+          <svg class="svg-icon"><use href="#icon-close"></use></svg>
+        </button>
+      </div>
+
+      <!-- 點擊上傳按鈕：跳出彈窗 -->
+      <button class="btn btn-primary open-upload-modal-btn" id="btn-trigger-upload-modal">
+        <svg class="svg-icon"><use href="#icon-upload"></use></svg>
+        <span>上傳影片</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== 主內容區域 (直接呈現 影音庫) ==================== -->
+  <main class="app-content">
+
+    <!-- 影音庫主視圖 -->
+    <section class="view-panel active" id="view-library">
+      
+      <!-- 媒體庫統計橫條 (精巧緊湊) -->
+      <div class="library-stats-bar">
+        <div class="lib-stat-item">
+          <span class="lib-stat-label">媒體庫總影片：</span>
+          <span class="lib-stat-val" id="stat-total-videos">0 部</span>
+        </div>
+        <div class="lib-stat-divider"></div>
+        <div class="lib-stat-item">
+          <span class="lib-stat-label">累積總時長：</span>
+          <span class="lib-stat-val" id="stat-total-duration">0 小時 0 分</span>
+        </div>
+        <div class="lib-stat-divider"></div>
+        <div class="lib-stat-item">
+          <span class="lib-stat-label">本機快取容量：</span>
+          <span class="lib-stat-val" id="stat-storage-used">0 MB</span>
+        </div>
+      </div>
+
+      <!-- 媒體庫工具列 -->
+      <div class="library-toolbar">
+        <div class="toolbar-left">
+          <div class="category-filters" id="category-filters">
+            <button class="filter-chip active" data-category="all">全部影片</button>
+            <button class="filter-chip" data-category="animation">動畫</button>
+            <button class="filter-chip" data-category="movie">電影</button>
+            <button class="filter-chip" data-category="music">音樂 MV</button>
+            <button class="filter-chip" data-category="tutorial">教學</button>
+            <button class="filter-chip" data-category="lifestyle">生活記錄</button>
+          </div>
+        </div>
+
+        <div class="toolbar-right">
+          <!-- 排序選項 -->
+          <div class="sort-selector-wrap">
+            <span class="sort-label">排序依：</span>
+            <select id="library-sort-select" class="custom-select">
+              <option value="newest">最新新增</option>
+              <option value="duration-desc">片長 (長到短)</option>
+              <option value="duration-asc">片長 (短到長)</option>
+              <option value="size-desc">檔案大小 (大到小)</option>
+              <option value="title-asc">片名 (A-Z)</option>
+            </select>
+          </div>
+
+          <!-- 網格 / 列表切換按鈕 (純 SVG) -->
+          <div class="view-mode-toggle">
+            <button class="toggle-mode-btn active" id="btn-view-grid" title="格狀檢視">
+              <svg class="svg-icon"><use href="#icon-grid"></use></svg>
+            </button>
+            <button class="toggle-mode-btn" id="btn-view-list" title="列表檢視">
+              <svg class="svg-icon"><use href="#icon-list"></use></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 批次操作工具列 (有選取時顯示) -->
+      <div class="batch-action-bar hidden" id="batch-action-bar">
+        <div class="batch-left">
+          <input type="checkbox" id="batch-select-all-checkbox" class="custom-checkbox">
+          <label for="batch-select-all-checkbox">已選取 <span id="batch-selected-count">0</span> 個影片</label>
+        </div>
+        <div class="batch-right">
+          <button class="btn btn-danger btn-sm" id="btn-batch-delete">
+            <svg class="svg-icon"><use href="#icon-trash"></use></svg>
+            <span>批次刪除</span>
+          </button>
+          <button class="btn btn-glass btn-sm" id="btn-batch-cancel">
+            <span>取消選取</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 影片卡片展示區 (Grid / List) -->
+      <div class="library-container grid-mode" id="library-container"></div>
+
+      <!-- 空白狀態 (Empty State) -->
+      <div class="empty-state hidden" id="library-empty-state">
+        <div class="empty-svg-graphic">
+          <svg viewBox="0 0 160 160" class="empty-illustration">
+            <circle cx="80" cy="80" r="70" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+            <rect x="40" y="45" width="80" height="60" rx="8" fill="rgba(0,162,255,0.06)" stroke="#00a2ff" stroke-width="2" />
+            <polygon points="72,63 96,75 72,87" fill="#00a2ff" />
+            <path d="M50 120 L110 120" stroke="rgba(255,255,255,0.2)" stroke-width="3" stroke-linecap="round" />
+            <path d="M65 130 L95 130" stroke="rgba(255,255,255,0.1)" stroke-width="3" stroke-linecap="round" />
+          </svg>
+        </div>
+        <h3>影片庫中目前尚無符合的影片</h3>
+        <p>您可以點擊上方「上傳影片」彈窗新增本機影片，或重設篩選關鍵字。</p>
+        <button class="btn btn-primary" id="btn-empty-upload-open">
+          <svg class="svg-icon"><use href="#icon-upload"></use></svg>
+          <span>上傳影片</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== 影片上傳自訂彈窗 (Upload Modal) ==================== -->
+  <div class="modal-backdrop hidden" id="modal-upload-video">
+    <div class="modal-card modal-card-lg">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <svg class="svg-icon text-cyan"><use href="#icon-upload"></use></svg>
+          <h3>新增影片至媒體庫</h3>
+        </div>
+        <button class="modal-close-btn" id="btn-close-upload-modal" title="關閉">
+          <svg class="svg-icon"><use href="#icon-close"></use></svg>
+        </button>
+      </div>
+
+      <div class="modal-body modal-body-scrollable">
+        
+        <!-- 步驟 1：檔案選取與拖放區 -->
+        <div class="modal-file-dropzone" id="modal-file-dropzone">
+          <input type="file" id="modal-file-input" accept="video/*" class="hidden-file-input">
+          
+          <div class="modal-drop-content" id="modal-drop-empty">
+            <div class="modal-drop-icon">
+              <svg viewBox="0 0 64 64" class="svg-drop-cloud">
+                <path d="M16 40 C10 40 6 34 10 27 C11 21 19 19 22 22 C27 13 41 13 46 22 C51 21 57 26 56 34 C59 37 57 40 52 40 Z" fill="rgba(0,162,255,0.15)" stroke="#00a2ff" stroke-width="2.2" stroke-linejoin="round" />
+                <polyline points="25 35 32 28 39 35" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                <line x1="32" y1="28" x2="32" y2="46" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" />
+              </svg>
+            </div>
+            <h4>拖放影片檔案至此處，或 <span class="text-cyan text-underline">點擊選取檔案</span></h4>
+            <p class="dropzone-hint">支援 MP4、WebM、MKV、MOV 等格式・近乎零延遲瞬間解析</p>
+          </div>
+
+          <!-- 已選取影片的狀態提示條 -->
+          <div class="modal-drop-selected hidden" id="modal-drop-selected">
+            <div class="selected-video-badge">
+              <svg class="svg-icon text-green"><use href="#icon-check"></use></svg>
+              <div class="selected-video-meta">
+                <strong id="selected-video-filename">video.mp4</strong>
+                <span id="selected-video-spec">計算中...</span>
+              </div>
+            </div>
+            <button type="button" class="btn btn-glass btn-sm" id="btn-rechoose-file">重新選擇</button>
+          </div>
+        </div>
+
+        <!-- 步驟 2：自訂資訊表單 (選取檔案後即時編輯) -->
+        <div class="modal-form-section">
+          
+          <!-- 影片名稱與分類 -->
+          <div class="form-row-2col">
+            <div class="form-group">
+              <label for="upload-video-title">影片名稱 <span class="required-star">*</span></label>
+              <input type="text" id="upload-video-title" class="custom-input" placeholder="請輸入影片名稱...">
+            </div>
+
+            <div class="form-group">
+              <label for="upload-video-category">影片分類</label>
+              <select id="upload-video-category" class="custom-select">
+                <option value="animation">動畫</option>
+                <option value="movie">電影</option>
+                <option value="music">音樂 MV</option>
+                <option value="tutorial">教學</option>
+                <option value="lifestyle">生活記錄</option>
+                <option value="other">其他</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 影片簡介 -->
+          <div class="form-group">
+            <label for="upload-video-desc">影片簡介描述</label>
+            <textarea id="upload-video-desc" class="custom-textarea" rows="2" placeholder="輸入關於此影片的補充介紹或筆記..."></textarea>
+          </div>
+
+          <!-- 自訂影片縮圖區 (自動抽幀 + 影格滑桿 + 上傳自訂圖片) -->
+          <div class="form-group">
+            <label class="section-sublabel">
+              <span>影片縮圖 (自動抽幀或自訂上傳)</span>
+            </label>
+            <div class="thumb-customizer-box">
+              <!-- 縮圖預覽 -->
+              <div class="thumb-preview-wrap">
+                <img id="upload-thumb-preview" class="thumb-preview-img" alt="影片封面預覽">
+                <div class="thumb-preview-badge" id="thumb-preview-source">自動產生封面</div>
+              </div>
+
+              <!-- 縮圖調整控制 -->
+              <div class="thumb-controls-wrap">
+                <div class="thumb-time-slider-row">
+                  <div class="slider-label-row">
+                    <span>影格時間點擷取：</span>
+                    <span class="text-cyan font-mono" id="thumb-frame-time-display">0:00:01</span>
+                  </div>
+                  <input type="range" id="thumb-frame-slider" min="0" max="100" step="0.1" value="1" class="frame-time-range" disabled>
+                </div>
+
+                <div class="thumb-custom-upload-row">
+                  <button type="button" class="btn btn-glass btn-sm" id="btn-upload-custom-image">
+                    <svg class="svg-icon"><use href="#icon-image"></use></svg>
+                    <span>上傳自訂封面圖 (JPG/PNG/WebP)</span>
+                  </button>
+                  <input type="file" id="custom-image-file-input" accept="image/*" class="hidden-file-input">
+                  <button type="button" class="btn btn-glass btn-sm" id="btn-reset-extracted-thumb" title="重設為影片畫面">
+                    <svg class="svg-icon"><use href="#icon-refresh"></use></svg>
+                    <span>重設</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 自訂字幕區 (可上傳 .vtt / .srt 檔案) -->
+          <div class="form-group">
+            <label class="section-sublabel">
+              <span>影片字幕 (支援 .vtt / .srt 檔案)</span>
+            </label>
+            <div class="subtitle-customizer-box">
+              <div class="subtitle-upload-strip">
+                <button type="button" class="btn btn-glass btn-sm" id="btn-upload-subtitle-file">
+                  <svg class="svg-icon"><use href="#icon-subtitles-file"></use></svg>
+                  <span>選取字幕檔 (.vtt / .srt)</span>
+                </button>
+                <input type="file" id="subtitle-file-input" accept=".vtt,.srt" class="hidden-file-input">
+                <span class="subtitle-status-text" id="subtitle-status-display">未附加字幕</span>
+                <button type="button" class="btn-clear-sub hidden" id="btn-remove-subtitle" title="移除字幕">
+                  <svg class="svg-icon"><use href="#icon-close"></use></svg>
+                </button>
+              </div>
+              <p class="form-field-tip">上傳後，播放器將自動建立字幕軌，並可透過右下角 CC 按鈕一鍵開啟/關閉顯示。</p>
+            </div>
+          </div>
+
+          <!-- 上傳/儲存處理中進度條 -->
+          <div class="modal-upload-progress-wrap hidden" id="modal-upload-progress-wrap">
+            <div class="progress-info-row">
+              <span id="modal-upload-progress-status">正在寫入本機高容量 IndexedDB...</span>
+              <span class="font-mono text-cyan" id="modal-upload-progress-percent">0%</span>
+            </div>
+            <div class="modal-progress-bar">
+              <div class="modal-progress-fill" id="modal-upload-progress-fill"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-glass" id="btn-cancel-upload-modal">取消</button>
+        <button type="button" class="btn btn-primary" id="btn-confirm-add-video" disabled>
+          <svg class="svg-icon"><use href="#icon-check"></use></svg>
+          <span>確認新增至影片庫</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 播放器全螢幕/劇院模式 (Player View - 嚴格按照截圖呈現) ==================== -->
+  <div class="player-overlay-view hidden" id="player-view">
+    <div class="player-stage" id="player-stage">
+      <!-- 實際 HTML5 影片元素 -->
+      <video id="main-video-element" class="main-video" playsinline crossorigin="anonymous"></video>
+
+      <!-- 即時字幕渲染疊層 (Subtitle Overlay) -->
+      <div class="player-subtitle-container" id="player-subtitle-container">
+        <div class="player-subtitle-cue hidden" id="player-subtitle-cue"></div>
+      </div>
+
+      <!-- 點擊全畫面觸發播放/暫停之中央大提示圖示 -->
+      <div class="center-play-indicator" id="center-play-indicator">
+        <svg class="svg-icon"><use href="#icon-play" id="center-icon-use"></use></svg>
+      </div>
+
+      <!-- 緩衝/載入中 Spinner (純向量 SVG) -->
+      <div class="player-buffering-spinner hidden" id="player-spinner">
+        <svg viewBox="0 0 50 50" class="spinner-svg">
+          <circle cx="25" cy="25" r="20" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="4"></circle>
+          <circle cx="25" cy="25" r="20" fill="none" stroke="#00a2ff" stroke-width="4" stroke-dasharray="80" stroke-dashoffset="60" stroke-linecap="round"></circle>
+        </svg>
+      </div>
+
+      <!-- 頂部漸層遮罩與影片標題 (完全符合截圖左上角「影片名稱」) -->
+      <div class="player-top-bar" id="player-top-bar">
+        <div class="top-bar-content">
+          <button class="player-btn back-btn" id="btn-player-back" title="返回影片庫">
+            <svg class="svg-icon"><use href="#icon-arrow-left"></use></svg>
+          </button>
+          <h1 class="player-video-title" id="player-title-display">影片名稱</h1>
+        </div>
+      </div>
+
+      <!-- 底部漸層遮罩與控制元件條 (完全符合截圖設計) -->
+      <div class="player-bottom-bar" id="player-bottom-bar">
+        
+        <!-- 進度條預覽時間泡泡 -->
+        <div class="scrubber-tooltip hidden" id="scrubber-tooltip">00:00:00</div>
+
+        <!-- 進度控制條容器 (包含天藍色進度條與圓形拖曳鈕) -->
+        <div class="player-progress-container" id="player-progress-container">
+          <div class="progress-bar-rail" id="progress-bar-rail">
+            <div class="progress-buffer-fill" id="progress-buffer-fill"></div>
+            <div class="progress-current-fill" id="progress-current-fill"></div>
+            <!-- 圓形拖曳控制點 (Scrubber Thumb Knob - 符合截圖天藍色圓點) -->
+            <div class="progress-scrubber-thumb" id="progress-scrubber-thumb"></div>
+          </div>
+        </div>
+
+        <!-- 控制列按鈕群組 (左至右嚴格對照截圖) -->
+        <div class="player-controls-row">
+          <div class="controls-left">
+            <!-- 播放 / 暫停按鈕 (三角形 / 雙豎線) -->
+            <button class="player-control-btn play-pause-btn" id="btn-player-play-pause" title="播放 (Space)">
+              <svg class="svg-icon player-icon"><use href="#icon-play" id="icon-use-play-pause"></use></svg>
+            </button>
+
+            <!-- 快退 10 秒 (左雙三角帶桿 - 截圖圖示) -->
+            <button class="player-control-btn" id="btn-player-rewind" title="快退 10 秒 (←)">
+              <svg class="svg-icon player-icon"><use href="#icon-rewind"></use></svg>
+            </button>
+
+            <!-- 快進 10 秒 (右雙三角帶桿 - 截圖圖示) -->
+            <button class="player-control-btn" id="btn-player-forward" title="快進 10 秒 (→)">
+              <svg class="svg-icon player-icon"><use href="#icon-forward"></use></svg>
+            </button>
+
+            <!-- 音量按鈕與音量滑桿 -->
+            <div class="volume-control-group">
+              <button class="player-control-btn" id="btn-player-volume" title="靜音切換 (M)">
+                <svg class="svg-icon player-icon"><use href="#icon-volume-high" id="icon-use-volume"></use></svg>
+              </button>
+              <div class="volume-slider-wrap">
+                <input type="range" id="volume-range-input" min="0" max="1" step="0.05" value="1" class="volume-slider">
+              </div>
+            </div>
+
+            <!-- 時間碼 (格式例如 1:05:06 / 1:57:21 如截圖所示) -->
+            <div class="player-time-display">
+              <span class="time-current" id="time-current">0:00:00</span>
+              <span class="time-divider">/</span>
+              <span class="time-duration" id="time-duration">0:00:00</span>
+            </div>
+          </div>
+
+          <div class="controls-right">
+            <!-- 字幕 CC 按鈕 (符合截圖) -->
+            <button class="player-control-btn" id="btn-player-captions" title="字幕開關 (C)">
+              <svg class="svg-icon player-icon"><use href="#icon-captions" id="icon-use-captions"></use></svg>
+            </button>
+
+            <!-- 畫中畫按鈕 -->
+            <button class="player-control-btn" id="btn-player-pip" title="畫中畫模式">
+              <svg class="svg-icon player-icon"><use href="#icon-pip"></use></svg>
+            </button>
+
+            <!-- 設定齒輪按鈕 (符合截圖) -->
+            <div class="settings-menu-anchor">
+              <button class="player-control-btn" id="btn-player-settings" title="播放設定">
+                <svg class="svg-icon player-icon"><use href="#icon-settings"></use></svg>
+              </button>
+              <!-- 設定選單彈出面板 -->
+              <div class="settings-popover hidden" id="settings-popover">
+                <div class="popover-header">播放設定</div>
+                <div class="popover-row">
+                  <span>播放速度</span>
+                  <div class="speed-options" id="speed-options">
+                    <button class="speed-chip" data-speed="0.5">0.5x</button>
+                    <button class="speed-chip" data-speed="0.75">0.75x</button>
+                    <button class="speed-chip active" data-speed="1.0">1.0x</button>
+                    <button class="speed-chip" data-speed="1.25">1.25x</button>
+                    <button class="speed-chip" data-speed="1.5">1.5x</button>
+                    <button class="speed-chip" data-speed="2.0">2.0x</button>
+                  </div>
+                </div>
+                <div class="popover-row">
+                  <span>循環播放</span>
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-loop-playback">
+                    <span class="slider-round"></span>
+                  </label>
+                </div>
+                <div class="popover-row">
+                  <span>畫面比例</span>
+                  <div class="aspect-options" id="aspect-options">
+                    <button class="speed-chip active" data-fit="contain">預設</button>
+                    <button class="speed-chip" data-fit="cover">填滿畫面</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 全螢幕按鈕 (符合截圖四角方框樣式) -->
+            <button class="player-control-btn" id="btn-player-fullscreen" title="全螢幕 (F)">
+              <svg class="svg-icon player-icon"><use href="#icon-fullscreen" id="icon-use-fullscreen"></use></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 影片編輯對話框 (Edit Modal) ==================== -->
+  <div class="modal-backdrop hidden" id="modal-edit-video">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>編輯影片資料</h3>
+        <button class="modal-close-btn" id="btn-close-edit-modal">
+          <svg class="svg-icon"><use href="#icon-close"></use></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-video-id">
+        <div class="form-group">
+          <label for="edit-title-input">影片名稱</label>
+          <input type="text" id="edit-title-input" class="custom-input">
+        </div>
+        <div class="form-group">
+          <label for="edit-category-select">所屬分類</label>
+          <select id="edit-category-select" class="custom-select">
+            <option value="animation">動畫</option>
+            <option value="movie">電影</option>
+            <option value="music">音樂 MV</option>
+            <option value="tutorial">教學</option>
+            <option value="lifestyle">生活記錄</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-desc-input">描述</label>
+          <textarea id="edit-desc-input" class="custom-textarea" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-glass" id="btn-cancel-edit">取消</button>
+        <button class="btn btn-primary" id="btn-confirm-edit">儲存更新</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 浮動通知提示 (Toast Container) ==================== -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- 引用主邏輯 JS -->
+  <script src="app.js"></script>
+</body>
+</html>
