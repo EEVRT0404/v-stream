@@ -192,8 +192,13 @@
   // 4. 初始化 App
   // ==========================================
   async function initApp() {
-    await dbEngine.init();
-    state.videos = await dbEngine.getAllVideos();
+    try {
+      await dbEngine.init();
+      state.videos = await dbEngine.getAllVideos();
+    } catch (error) {
+      console.error('媒體庫載入失敗:', error);
+      showToast(`本機資料庫載入失敗：${error.message || '請重新整理頁面'}`, 'error');
+    }
     setupEventListeners();
     updateUI();
   }
@@ -651,23 +656,9 @@
     uploadModal.confirmBtn.disabled = true;
     uploadModal.progressWrap.classList.remove('hidden');
 
-    // 模擬極速本機寫入動畫
-    await new Promise(resolve => {
-      let pct = 0;
-      const timer = setInterval(() => {
-        pct += 25;
-        if (pct >= 100) {
-          clearInterval(timer);
-          uploadModal.progressFill.style.width = '100%';
-          uploadModal.progressPercent.textContent = '100%';
-          uploadModal.progressStatus.textContent = '匯入完成！';
-          resolve();
-        } else {
-          uploadModal.progressFill.style.width = `${pct}%`;
-          uploadModal.progressPercent.textContent = `${pct}%`;
-        }
-      }, 30);
-    });
+    uploadModal.progressFill.style.width = '10%';
+    uploadModal.progressPercent.textContent = '10%';
+    uploadModal.progressStatus.textContent = '正在寫入本機資料庫...';
 
     const fileId = 'vid_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
 
@@ -688,7 +679,19 @@
       progressSeconds: 0
     };
 
-    await dbEngine.saveVideo(videoRecord);
+    try {
+      await dbEngine.saveVideo(videoRecord);
+    } catch (error) {
+      console.error('影片新增失敗:', error);
+      uploadModal.confirmBtn.disabled = false;
+      uploadModal.progressStatus.textContent = '新增失敗，請確認瀏覽器儲存空間後重試';
+      showToast(`影片新增失敗：${error.message || '資料庫寫入錯誤'}`, 'error');
+      return;
+    }
+
+    uploadModal.progressFill.style.width = '100%';
+    uploadModal.progressPercent.textContent = '100%';
+    uploadModal.progressStatus.textContent = '已新增到資料庫！';
     state.videos.unshift(videoRecord);
 
     closeUploadModal();

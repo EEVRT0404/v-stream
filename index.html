@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="favicon.png" type="image/png" sizes="64x64">
-  <title>V-Stream 影片媒體庫</title>
+  <title>V-Stream 影片媒體庫</title> 
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -209,7 +209,7 @@
     <div class="header-left">
       <a href="#" class="brand-logo" id="nav-brand" title="返回影片庫">
         <div class="logo-icon-wrap">
-          <svg class="svg-icon logo-icon"><use href="#icon-logo"></use></svg>
+          <link rel="icon" href="favicon.png" type="image/png" sizes="64x64">
         </div>
         <span class="brand-name">V-Stream <span class="brand-badge">Vault</span></span>
       </a>
@@ -526,10 +526,10 @@
       <!-- 頂部漸層遮罩與影片標題 (完全符合截圖左上角「影片名稱」) -->
       <div class="player-top-bar" id="player-top-bar">
         <div class="top-bar-content">
-          <button class="player-btn back-btn" id="btn-player-back" title="返回影片庫">
-            <svg class="svg-icon"><use href="#icon-arrow-left"></use></svg>
-          </button>
           <h1 class="player-video-title" id="player-title-display">影片名稱</h1>
+          <button class="player-btn back-btn" id="btn-player-back" title="關閉播放器">
+            <svg class="svg-icon"><use href="#icon-close"></use></svg>
+          </button>
         </div>
       </div>
 

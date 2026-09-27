@@ -1134,6 +1134,7 @@ body {
 .top-bar-content {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1.25rem;
 }
 
@@ -1159,6 +1160,10 @@ body {
 
 /* 截圖中的左上角影片名稱字樣 */
 .player-video-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 1.35rem;
   font-weight: 500;
   color: #ffffff;
@@ -1552,8 +1557,11 @@ input:checked + .slider-round:before {
 /* ==================== 浮動通知提示 (Toast) ==================== */
 .toast-container {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100vw - 2rem);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -1562,6 +1570,7 @@ input:checked + .slider-round:before {
 }
 
 .toast-msg {
+  max-width: 100%;
   background: rgba(14, 19, 31, 0.95);
   border: 1px solid var(--border-glow);
   color: #fff;
