@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="favicon.png" type="image/png" sizes="64x64">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#07090e">
   <title>V-Stream 影片媒體庫</title> 
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -685,5 +687,12 @@
 
   <!-- 引用主邏輯 JS -->
   <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
 </body>
 </html>
